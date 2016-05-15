@@ -6,23 +6,13 @@ sudo yunohost app setting doctorcube version -v "0.1"
 
 KERNEL_VERSION=$(uname -r)
 
-if dpkg -l | grep -q linux-image; then
+[ -e /etc/apt/sources.list.d/testing.list ] && sudo rm -f /etc/apt/sources.list.d/testing.list
+[ -e /etc/apt/sources.list.d/backport.list ] && sudo rm -f /etc/apt/sources.list.d/backport.list
+[ -e /etc/apt/preferences.d/kernel-testing ] && sudo rm -f /etc/apt/preferences.d/kernel-testing
+[ -e /etc/apt/preferences.d/kernel-testing ] && sudo rm -f /etc/apt/preferences.d/kernel-backports
+echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
+DEBIAN_FRONTEND=noninteractive sudo apt-get remove -y --force-yes --purge linux-image-4* flash-kernel u-boot-tools u-boot-sunxi
 
-  if [[ $KERNEL_VERSION =~ ^4\. ]] ; then
-
-    sudo rm -f /etc/apt/sources.list.d/{testing,backport}.list
-    sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
-    echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
-    DEBIAN_FRONTEND=noninteractive sudo apt-get remove -y --force-yes --purge linux-image-4* flash-kernel u-boot-tools u-boot-sunxi
-
-  else
-
-    echo "Nothing to do, quit"
-    exit 0
-
-  fi
-
-fi
 
 if [ -f /etc/crypttab ] ; then
   sudo su root -c "echo 'LINUX_KERNEL_CMDLINE=\"console=ttyS2 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 root=/dev/mapper/root cryptopts=target=root,source=/dev/mmcblk0p2,cipher=aes-xts-plain64,size=256,hash=sha1 rootwait sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_no_mali_mem_reserve sunxi_fb_mem_reserve=0 panic=10 loglevel=6 consoleblank=0\"' > /etc/default/flash-kernel"
