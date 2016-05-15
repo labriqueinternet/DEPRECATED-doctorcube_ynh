@@ -11,7 +11,7 @@ It contains the script to fix the 4.5 kernel bug.
 
 To install (remember what I've said about breaking the world?):
 
-    yunohost app install https://github.com/labriqueinternet/doctorcube_ynh
+    yunohost app install https://github.com/labriqueinternet/doctorcube_ynh --verbose
 
 Things that this app do:
 
