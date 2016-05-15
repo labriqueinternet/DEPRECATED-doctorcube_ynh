@@ -1,9 +1,9 @@
 {
-    "name": "La Brique Internet",
-    "id": "labriqueinternet",
+    "name": "Doctor Cube",
+    "id": "doctorcube",
     "description": {
-        "en": "Configuration app for Internet Cubes",
-        "fr": "Application de configuration pour les Briques Internet."
+        "en": "Doctor Cube helps ensuring that your Internet Cube is working as expected",
+        "fr": "Doctor Cube s'assure que votre Brique Internet fonctionne comme prévue"
     },
     "license": "GPL-3+",
     "maintainer": {
