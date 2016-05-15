@@ -1,0 +1,5 @@
+
+if [ "$(yunohost app listlists | grep labriqueinternet)" ]
+then
+    yunohost app removelist labriqueinternet
+fi
