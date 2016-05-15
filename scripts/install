@@ -2,6 +2,8 @@
 
 set -xe
 
+sudo yunohost app setting labriqueinternet version -v "0.1"
+
 KERNEL_VERSION=$(uname -r)
 
 if dpkg -l | grep -q linux-image; then
