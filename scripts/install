@@ -2,7 +2,7 @@
 
 set -xe
 
-sudo yunohost app setting labriqueinternet version -v "0.1"
+sudo yunohost app setting doctorcube version -v "0.1"
 
 KERNEL_VERSION=$(uname -r)
 
