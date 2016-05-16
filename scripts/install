@@ -25,7 +25,7 @@ fi
 
 sudo apt-get clean
 sudo apt-get update
-DEBIAN_FRONTEND=noninteractive sudo apt install -y --force-yes linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
+DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --force-yes linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
 update-initramfs -k all -u
 
 sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json
