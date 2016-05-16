@@ -1,5 +1,5 @@
 
-if [ "$(yunohost app listlists | grep labriqueinternet)" ]
+if [ "$(sudo yunohost app listlists | grep labriqueinternet)" ]
 then
-    yunohost app removelist labriqueinternet
+    sudo yunohost app removelist labriqueinternet
 fi
