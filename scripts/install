@@ -29,5 +29,7 @@ fi
 
 sudo apt-get clean
 sudo apt-get update
-DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --force-yes linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
+for i in linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools; do
+    [ "$(apt-cache search $i | grep "^$i ")" ] && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --force-yes $i
+done
 update-initramfs -k all -u
