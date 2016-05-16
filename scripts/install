@@ -6,6 +6,8 @@ set -xe
 
 sudo yunohost app setting doctorcube version -v "0.1"
 
+sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json
+
 KERNEL_VERSION=$(uname -r)
 
 for i in /etc/apt/sources.list.d/testing.list /etc/apt/sources.list.d/backport.list /etc/apt/preferences.d/kernel-testing /etc/apt/preferences.d/kernel-testing; do
@@ -29,5 +31,3 @@ sudo apt-get clean
 sudo apt-get update
 DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --force-yes linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
 update-initramfs -k all -u
-
-sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json
