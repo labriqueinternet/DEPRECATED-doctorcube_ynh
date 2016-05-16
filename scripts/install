@@ -11,7 +11,12 @@ KERNEL_VERSION=$(uname -r)
 [ -e /etc/apt/preferences.d/kernel-testing ] && sudo rm -f /etc/apt/preferences.d/kernel-testing
 [ -e /etc/apt/preferences.d/kernel-testing ] && sudo rm -f /etc/apt/preferences.d/kernel-backports
 echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
-DEBIAN_FRONTEND=noninteractive sudo apt-get remove -y --force-yes --purge linux-image-4* flash-kernel u-boot-tools u-boot-sunxi
+
+for i in "linux-image-4*" flash-kernel u-boot-tools u-boot-sunxi; do
+    if [ "$(dpkg -l | grep $i)" ]; then
+        DEBIAN_FRONTEND=noninteractive sudo apt-get remove -y --force-yes --purge $i
+    fi
+done
 
 
 if [ -f /etc/crypttab ] ; then
