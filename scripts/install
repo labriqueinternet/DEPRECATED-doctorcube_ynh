@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO check that we only do this on arm board to avoid people installing it on something else
+
 set -xe
 
 sudo yunohost app setting doctorcube version -v "0.1"
