@@ -16,9 +16,7 @@ done
 
 echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
 
-for i in "linux-image-4*" flash-kernel u-boot-tools u-boot-sunxi; do
-    [ "$(dpkg -l | grep $i)" ] && DEBIAN_FRONTEND=noninteractive sudo apt-get remove -y --force-yes --purge $i
-done
+DEBIAN_FRONTEND=noninteractive sudo apt-get remove -y --force-yes --purge linux-image-4* flash-kernel u-boot-tools u-boot-sunxi
 
 
 if [ -f /etc/crypttab ] ; then
@@ -29,7 +27,5 @@ fi
 
 sudo apt-get clean
 sudo apt-get update
-for i in linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools; do
-    [ "$(apt-cache search $i | grep "^$i ")" ] && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --force-yes $i
-done
+DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --force-yes linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
 update-initramfs -k all -u
