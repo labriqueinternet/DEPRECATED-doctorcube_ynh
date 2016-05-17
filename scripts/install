@@ -10,9 +10,8 @@ sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/app
 
 KERNEL_VERSION=$(uname -r)
 
-for i in /etc/apt/sources.list.d/testing.list /etc/apt/sources.list.d/backports.list /etc/apt/preferences.d/kernel-testing /etc/apt/preferences.d/kernel-backports; do
-    [ -e $i ] && sudo rm -f $i
-done
+sudo rm -f /etc/apt/sources.list.d/{backports,testing}.list
+sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
 
 echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
 
