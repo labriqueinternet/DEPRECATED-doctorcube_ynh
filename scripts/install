@@ -10,7 +10,7 @@ sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/app
 
 KERNEL_VERSION=$(uname -r)
 
-for i in /etc/apt/sources.list.d/testing.list /etc/apt/sources.list.d/backport.list /etc/apt/preferences.d/kernel-testing /etc/apt/preferences.d/kernel-testing; do
+for i in /etc/apt/sources.list.d/testing.list /etc/apt/sources.list.d/backports.list /etc/apt/preferences.d/kernel-testing /etc/apt/preferences.d/kernel-backports; do
     [ -e $i ] && sudo rm -f $i
 done
 
