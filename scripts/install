@@ -38,5 +38,5 @@ if [ "$(find /boot/ -name '*olinux*')" ]; then
     sudo update-initramfs -k all -u
   fi
 else
-  echo 'Nothing to do. this app is inteded to be installed only on the Internet Cube'
+  echo "WARNING: you aren't running this script on an Internet Cube, therefor I'm not touching your kernel but I'm still adding you the InternetCube apps list."
 fi
