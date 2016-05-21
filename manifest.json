@@ -6,7 +6,7 @@
         "fr": "Doctor Cube s'assure que votre Brique Internet fonctionne comme prévue"
     },
     "license": "GPL-3+",
-    "maintainer": {
+    "developer": {
         "name": "bram",
         "email": "cortex@worlddomination.be",
         "url": "http://worlddomination.be"
