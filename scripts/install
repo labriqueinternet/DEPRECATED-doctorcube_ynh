@@ -4,7 +4,9 @@
 
 set -xe
 
-export DEBIAN_FRONTEND=noninteractive
+export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
+export LC_ALL=C LANGUAGE=C LANG=C
+apt='sudo --preserve-env apt-get'
 
 sudo yunohost app setting doctorcube version -v "0.1"
 
@@ -18,7 +20,7 @@ if [ "$(dpkg -l | grep 'linux-image-4')" ]; then
 
     echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
 
-    DEBIAN_FRONTEND=noninteractive sudo apt-get remove --purge -qy --force-yes \
+    $apt remove --purge -qy --force-yes \
         linux-image-4* flash-kernel u-boot-tools u-boot-sunxi
 
 
@@ -28,9 +30,9 @@ if [ "$(dpkg -l | grep 'linux-image-4')" ]; then
       sudo su root -c "echo 'LINUX_KERNEL_CMDLINE=\"console=ttyS1 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 root=/dev/mmcblk0p1 rootwait sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_no_mali_mem_reserve sunxi_fb_mem_reserve=0 panic=10 loglevel=6 consoleblank=0\"' > /etc/default/flash-kernel"
     fi
 
-    sudo apt-get clean -q
-    sudo apt-get update -q
-    DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy --force-yes \
+    $apt clean -q
+    $apt update -q
+    $apt install -qy --force-yes \
         -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold \
         linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
     sudo update-initramfs -k all -u
