@@ -1,21 +1,21 @@
 #!/bin/bash
 
-# TODO check that we only do this on arm board to avoid people installing it on something else
-
 set -xe
 
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 apt='sudo --preserve-env apt-get'
 
-sudo yunohost app setting doctorcube version -v "0.1"
+if [ "$(find /boot/ -name '*olinux*')" ]; then
+  # We are on a brique, or at least on a olinux board :)
 
-sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json
+  sudo yunohost app setting doctorcube version -v "0.1"
+  sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json
 
-sudo rm -f /etc/apt/sources.list.d/{backports,testing}.list
-sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
+  sudo rm -f /etc/apt/sources.list.d/{backports,testing}.list
+  sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
 
-if [ "$(dpkg -l | grep 'linux-image-4')" ]; then
+  if [ "$(dpkg -l | grep 'linux-image-4')" ]; then
     KERNEL_VERSION=$(uname -r)
 
     echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
@@ -36,4 +36,7 @@ if [ "$(dpkg -l | grep 'linux-image-4')" ]; then
         -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold \
         linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
     sudo update-initramfs -k all -u
+  fi
+else
+  echo 'Nothing to do. this app is inteded to be installed only on the Internet Cube'
 fi
