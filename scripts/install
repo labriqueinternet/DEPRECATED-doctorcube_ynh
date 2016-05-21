@@ -6,11 +6,11 @@ export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 apt='sudo --preserve-env apt-get'
 
+sudo yunohost app setting doctorcube version -v "0.1"
+sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json
+
 if [ "$(find /boot/ -name '*olinux*')" ]; then
   # We are on a brique, or at least on a olinux board :)
-
-  sudo yunohost app setting doctorcube version -v "0.1"
-  sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json
 
   sudo rm -f /etc/apt/sources.list.d/{backports,testing}.list
   sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
