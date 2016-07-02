@@ -12,6 +12,21 @@ sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/app
 if [ "$(find /boot/ -name '*olinux*')" ]; then
   # We are on a brique, or at least on a olinux board :)
 
+  # Fix hostname name
+  domain=$(sudo yunohost domain list --output-as plain|head -1)
+  if [ -n "$domain" ]; then
+    sudo hostnamectl --static set-hostname "${domain}"
+    sudo hostnamectl --transient set-hostname "${domain}"
+    sudo hostnamectl --pretty set-hostname "La Brique InterNet (${domain})"
+
+    if ! grep -q "127.0.0.1 ${domain}" /etc/hosts; then
+      echo "127.0.0.1 $domain" | sudo tee -a /etc/hosts
+    fi
+    if ! grep -q "::1 ${domain}" /etc/hosts; then
+      echo "::1 $domain" | sudo tee -a /etc/hosts
+    fi
+  fi
+
   sudo rm -f /etc/apt/sources.list.d/{backports,testing}.list
   sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
 
