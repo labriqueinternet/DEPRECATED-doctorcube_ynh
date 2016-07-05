@@ -1,9 +1,9 @@
 #!/bin/bash
 
+# Fix hostname and configure hosts
 set_correct_hostname() {
-    # Fix hostname name
     domain=$(sudo yunohost domain list | sed -n '2p' | sed 's/  - //')
-    if [ -n "$domain" ] && [ ! "$(hostnamectl --static | grep '\.')" ]; then
+    if [ -n "$domain" ] && ! hostnamectl --static | grep -q '\.'; then
         sudo hostnamectl --static set-hostname "${domain}"
         sudo hostnamectl --transient set-hostname "${domain}"
         sudo hostnamectl --pretty set-hostname "La Brique InterNet (${domain})"

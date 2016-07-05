@@ -19,7 +19,7 @@ if [ "$(find /boot/ -name '*olinux*')" ]; then
     sudo rm -f /etc/apt/sources.list.d/{backports,testing}.list
     sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
 
-    if [ "$(dpkg -l | grep 'linux-image-4')" ]; then
+    if dpkg -l | grep -q 'linux-image-4'; then
         KERNEL_VERSION=$(uname -r)
 
         echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
