@@ -12,4 +12,5 @@ To install:
 Things that this app do:
 
 * fix the 4.5 kernel bug (by not installing it and moving back to debian stable for the linux kernels)
-* app labriqueinternet.json app list
+* add labriqueinternet.json app list
+* fix hostname and hosts
