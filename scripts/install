@@ -2,56 +2,45 @@
 
 set -xe
 
+source ./commons
+
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 apt='sudo --preserve-env apt-get'
 
-sudo yunohost app setting doctorcube version -v "0.1"
+sudo yunohost app setting doctorcube version -v "0.2"
 sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json
 
 if [ "$(find /boot/ -name '*olinux*')" ]; then
-  # We are on a brique, or at least on a olinux board :)
+    # We are on a brique, or at least on a olinux board :)
 
-  # Fix hostname name
-  domain=$(sudo yunohost domain list --output-as plain|head -1)
-  if [ -n "$domain" ]; then
-    sudo hostnamectl --static set-hostname "${domain}"
-    sudo hostnamectl --transient set-hostname "${domain}"
-    sudo hostnamectl --pretty set-hostname "La Brique InterNet (${domain})"
+    set_correct_hostname
 
-    if ! grep -q "127.0.0.1 ${domain}" /etc/hosts; then
-      echo "127.0.0.1 $domain" | sudo tee -a /etc/hosts
+    sudo rm -f /etc/apt/sources.list.d/{backports,testing}.list
+    sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
+
+    if [ "$(dpkg -l | grep 'linux-image-4')" ]; then
+        KERNEL_VERSION=$(uname -r)
+
+        echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
+
+        $apt remove --purge -qy --force-yes \
+            linux-image-4* flash-kernel u-boot-tools u-boot-sunxi
+
+
+        if [ -f /etc/crypttab ] ; then
+            sudo su root -c "echo 'LINUX_KERNEL_CMDLINE=\"console=ttyS2 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 root=/dev/mapper/root cryptopts=target=root,source=/dev/mmcblk0p2,cipher=aes-xts-plain64,size=256,hash=sha1 rootwait sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_no_mali_mem_reserve sunxi_fb_mem_reserve=0 panic=10 loglevel=6 consoleblank=0\"' > /etc/default/flash-kernel"
+        else
+            sudo su root -c "echo 'LINUX_KERNEL_CMDLINE=\"console=ttyS1 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 root=/dev/mmcblk0p1 rootwait sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_no_mali_mem_reserve sunxi_fb_mem_reserve=0 panic=10 loglevel=6 consoleblank=0\"' > /etc/default/flash-kernel"
+        fi
+
+        $apt clean -q
+        $apt update -q
+        $apt install -qy --force-yes \
+            -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold \
+            linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
+        sudo update-initramfs -k all -u
     fi
-    if ! grep -q "::1 ${domain}" /etc/hosts; then
-      echo "::1 $domain" | sudo tee -a /etc/hosts
-    fi
-  fi
-
-  sudo rm -f /etc/apt/sources.list.d/{backports,testing}.list
-  sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
-
-  if [ "$(dpkg -l | grep 'linux-image-4')" ]; then
-    KERNEL_VERSION=$(uname -r)
-
-    echo "linux-image-$KERNEL_VERSION linux-image-$KERNEL_VERSION/prerm/removing-running-kernel-$KERNEL_VERSION boolean false" | sudo debconf-set-selections
-
-    $apt remove --purge -qy --force-yes \
-        linux-image-4* flash-kernel u-boot-tools u-boot-sunxi
-
-
-    if [ -f /etc/crypttab ] ; then
-      sudo su root -c "echo 'LINUX_KERNEL_CMDLINE=\"console=ttyS2 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 root=/dev/mapper/root cryptopts=target=root,source=/dev/mmcblk0p2,cipher=aes-xts-plain64,size=256,hash=sha1 rootwait sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_no_mali_mem_reserve sunxi_fb_mem_reserve=0 panic=10 loglevel=6 consoleblank=0\"' > /etc/default/flash-kernel"
-    else
-      sudo su root -c "echo 'LINUX_KERNEL_CMDLINE=\"console=ttyS1 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 root=/dev/mmcblk0p1 rootwait sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_no_mali_mem_reserve sunxi_fb_mem_reserve=0 panic=10 loglevel=6 consoleblank=0\"' > /etc/default/flash-kernel"
-    fi
-
-    $apt clean -q
-    $apt update -q
-    $apt install -qy --force-yes \
-        -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold \
-        linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
-    sudo update-initramfs -k all -u
-  fi
 else
-  echo "WARNING: you aren't running this script on an Internet Cube, therefor I'm not touching your kernel but I'm still adding you the InternetCube apps list."
+    echo "WARNING: you aren't running this script on an Internet Cube, therefor I'm not touching your kernel but I'm still adding you the InternetCube apps list."
 fi

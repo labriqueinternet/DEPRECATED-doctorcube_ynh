@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+source ./commons
+
+version=$(sudo yunohost app setting doctorcube version)
+
+# 0.1 -> 0.2
+if [[ "$version" == "0.1" ]]; then
+
+    set_correct_hostname
+
+    sudo yunohost app setting doctorcube version -v "0.2"
+    version="0.2"
+fi
