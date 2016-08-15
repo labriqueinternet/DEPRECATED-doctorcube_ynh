@@ -6,11 +6,24 @@ source ./commons
 
 version=$(sudo yunohost app setting doctorcube version)
 
-# 0.1 -> 0.2
+# 0.1 -> 0.2.1
 if [[ "$version" == "0.1" ]]; then
 
     set_correct_hostname
 
-    sudo yunohost app setting doctorcube version -v "0.2"
-    version="0.2"
+    sudo yunohost app setting doctorcube version -v "0.2.1"
+    version="0.2.1"
+fi
+
+# 0.2 -> 0.2.1
+if [[ "$version" == "0.2" ]]; then
+
+    # we weren't setting the domain correctly in the case of only
+    # one single domain
+    if [[ "$(hostname)" == "olinux" ]]; then
+        set_correct_hostname
+    fi
+
+    sudo yunohost app setting doctorcube version -v "0.2.1"
+    version="0.2.1"
 fi
