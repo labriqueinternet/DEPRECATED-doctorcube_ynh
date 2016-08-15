@@ -8,7 +8,7 @@ export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 apt='sudo --preserve-env apt-get'
 
-sudo yunohost app setting doctorcube version -v "0.2"
+sudo yunohost app setting doctorcube version -v "0.2.1"
 sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json
 
 if [ "$(find /boot/ -name '*olinux*')" ]; then
