@@ -7,10 +7,12 @@ source src/commands
 set_doctorcube_version "${_LATESTVERSION}"
 
 # Adds labriqueinternet app list
-fetch_labriqueinternet_applist
+if ! has_labriqueinternet_applist; then
+  fetch_labriqueinternet_applist
+fi
 
 # Sets a correct hostname based on the first Yunohost domain
-if has_incorrect_hostname; then
+if ! has_correct_hostname; then
   fix_hostname
 fi
 
