@@ -45,7 +45,9 @@ if [ "${version}" = 0.2.1 ]; then
     fi
   
     # Fixes a security issue (removing eval commands) and some minor bugs
-    update_decryption_webinterface
+    if ! compare_decryption_webinterface_version 6becabaf57e95e334ebb8141642b807974885f84; then
+      update_decryption_webinterface 6becabaf57e95e334ebb8141642b807974885f84
+    fi
   fi
 
   version=0.3

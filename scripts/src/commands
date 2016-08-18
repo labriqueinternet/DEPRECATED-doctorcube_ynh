@@ -56,21 +56,34 @@ function fix_hostname() {
   fi
 }
 
-function is_decryption_webinterface_outdated() {
-  pushd "${_TMPDIR}" > /dev/null
-  wget -q https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/master/raw/build/script/initramfs/www/cgi-bin/post.sh
-  wget -q https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/master/raw/build/script/initramfs/www/index.html
-  popd > /dev/null
+function compare_decryption_webinterface_version() {
+  local commit=$1
 
-  ! sudo cmp -s "${_TMPDIR}/index.html" /etc/initramfs-tools/root/www/index.html\
-    || ! sudo cmp -s "${_TMPDIR}/post.sh" /etc/initramfs-tools/root/www/cgi-bin/post.sh
+  mkdir -p "${_TMPDIR}/webdecryption/"
+
+  if [ "${commit}" = latest ]; then
+    wget -q https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/master/raw/build/script/initramfs/www/cgi-bin/post.sh -O "${_TMPDIR}/webdecryption/latest_post.sh"
+    wget -q https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/master/raw/build/script/initramfs/www/index.html -O "${_TMPDIR}/webdecryption/latest_index.html"
+  else
+    wget -q "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/cgi-bin/post.sh" -O "${_TMPDIR}/webdecryption/${commit}_post.sh"
+    wget -q "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/index.html" -O "${_TMPDIR}/webdecryption/${commit}_index.html"
+  fi
+
+  ! sudo cmp -s "${_TMPDIR}/webdecryption/${commit}_index.html" /etc/initramfs-tools/root/www/index.html\
+    || ! sudo cmp -s "${_TMPDIR}/webdecryption/${commit}_post.sh" /etc/initramfs-tools/root/www/cgi-bin/post.sh
 }
 
 function update_decryption_webinterface() {
+  local commit=$1
+
   info "Updating decryption web interface..."
 
-  sudo mv "${_TMPDIR}/index.html" /etc/initramfs-tools/root/www/index.html
-  sudo mv "${_TMPDIR}/post.sh" /etc/initramfs-tools/root/www/cgi-bin/post.sh
+  if [ ! -f "${_TMPDIR}/webdecryption/latest_post.sh" -o ! -f "${_TMPDIR}/webdecryption/latest_index.html" ]; then
+    compare_decryption_webinterface_version "${commit}"
+  fi
+
+  sudo mv "${_TMPDIR}/webdecryption/${commit}_index.html" /etc/initramfs-tools/root/www/index.html
+  sudo mv "${_TMPDIR}/webdecryption/${commit}_post.sh" /etc/initramfs-tools/root/www/cgi-bin/post.sh
   sudo chmod +x /etc/initramfs-tools/root/www/cgi-bin/post.sh
 
   sudo sed 's/^TIMEOUTclose.*/TIMEOUTclose = 3600/' -i /etc/initramfs-tools/stunnel.conf
