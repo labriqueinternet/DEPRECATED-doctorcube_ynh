@@ -15,8 +15,12 @@ function err() {
 }
 
 function to_logs() {
+
+  # When yunohost --verbose or bash -x
   if $_ISVERBOSE; then
     cat
+  else
+    cat > /dev/null
   fi
 }
 
