@@ -22,7 +22,7 @@ function remove_testing_kernel() {
   local kernel_version="$(uname -r)"
   echo "linux-image-${kernel_version} linux-image-${kernel_version}/prerm/removing-running-kernel-${kernel_version} boolean false" | sudo debconf-set-selections |& to_logs
 
-  $_APT remove --purge -y --force-yes linux-image-4* flash-kernel u-boot-tools u-boot-sunxi |& to_logs
+  $_APT remove --purge -y --force-yes 'linux-image-4.*' flash-kernel u-boot-tools u-boot-sunxi |& to_logs
 
   if has_encryptedfs; then
     echo 'LINUX_KERNEL_CMDLINE="console=ttyS2 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 root=/dev/mapper/root cryptopts=target=root,source=/dev/mmcblk0p2,cipher=aes-xts-plain64,size=256,hash=sha1 rootwait sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_no_mali_mem_reserve sunxi_fb_mem_reserve=0 panic=10 loglevel=6 consoleblank=0"' | sudo tee /etc/default/flash-kernel &> /dev/null
