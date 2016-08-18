@@ -5,7 +5,7 @@ export DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 
 readonly _LATESTVERSION="$(cat ./version)"
-readonly _CURRENTVERSION="$(sudo yunohost app setting doctorcube version)"
+readonly _CURRENTVERSION="$(sudo yunohost app setting doctorcube version || echo -1)"
 readonly _TMPDIR="$(mktemp -dp /tmp/ doctorcube-XXXXX)"
 readonly _APT='sudo --preserve-env apt-get'
 

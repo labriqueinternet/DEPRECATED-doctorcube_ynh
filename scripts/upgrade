@@ -4,7 +4,7 @@ source src/env
 source src/helpers
 source src/commands
 
-version=$_CURRENTVERSION
+local version=$_CURRENTVERSION
 
 info "Current version of DoctorCube is ${version}"
 info "Latest version of DoctorCube is ${_LATESTVERSION}"
@@ -45,8 +45,9 @@ if [ "${version}" = 0.2.1 ]; then
     fi
   
     # Fixes a security issue (removing eval commands) and some minor bugs
-    if ! compare_decryption_webinterface_version 6becabaf57e95e334ebb8141642b807974885f84; then
-      update_decryption_webinterface 6becabaf57e95e334ebb8141642b807974885f84
+    local decryption_webinterface_version=6becabaf57e95e334ebb8141642b807974885f84
+    if ! compare_decryption_webinterface_version "${decryption_webinterface_version}"; then
+      update_decryption_webinterface "${decryption_webinterface_version}"
     fi
   fi
 

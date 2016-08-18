@@ -19,9 +19,14 @@ if is_olinux_board && has_testing_kernel; then
   remove_testing_kernel
 fi
 
-# Updates the decryption web interface and rebuilds the initramfs
-if has_encryptedfs && ! compare_decryption_webinterface_version latest; then
-  update_decryption_webinterface latest
+# The filesystem is encrypted
+if has_encryptedfs; then
+
+  # Updates the decryption web interface and rebuilds the initramfs
+  local decryption_webinterface_version=6becabaf57e95e334ebb8141642b807974885f84
+  if ! compare_decryption_webinterface_version "${decryption_webinterface_version}"; then
+    update_decryption_webinterface "${decryption_webinterface_version}"
+  fi
 fi
 
 exit 0

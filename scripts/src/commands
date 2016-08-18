@@ -56,30 +56,31 @@ function fix_hostname() {
   fi
 }
 
-function compare_decryption_webinterface_version() {
+function download_decryption_webinterface() {
   local commit=$1
 
   mkdir -p "${_TMPDIR}/webdecryption/"
 
-  if [ "${commit}" = latest ]; then
-    wget -q https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/master/raw/build/script/initramfs/www/cgi-bin/post.sh -O "${_TMPDIR}/webdecryption/latest_post.sh"
-    wget -q https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/master/raw/build/script/initramfs/www/index.html -O "${_TMPDIR}/webdecryption/latest_index.html"
-  else
-    wget -q "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/cgi-bin/post.sh" -O "${_TMPDIR}/webdecryption/${commit}_post.sh"
-    wget -q "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/index.html" -O "${_TMPDIR}/webdecryption/${commit}_index.html"
-  fi
+  wget -q "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/cgi-bin/post.sh" -O "${_TMPDIR}/webdecryption/${commit}_post.sh"
+  wget -q "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/index.html" -O "${_TMPDIR}/webdecryption/${commit}_index.html"
+}
 
-  ! sudo cmp -s "${_TMPDIR}/webdecryption/${commit}_index.html" /etc/initramfs-tools/root/www/index.html\
-    || ! sudo cmp -s "${_TMPDIR}/webdecryption/${commit}_post.sh" /etc/initramfs-tools/root/www/cgi-bin/post.sh
+function compare_decryption_webinterface_version() {
+  local commit=$1
+
+  download_decryption_webinterface "${commit}"
+
+  sudo cmp -s "${_TMPDIR}/webdecryption/${commit}_index.html" /etc/initramfs-tools/root/www/index.html\
+    && sudo cmp -s "${_TMPDIR}/webdecryption/${commit}_post.sh" /etc/initramfs-tools/root/www/cgi-bin/post.sh
 }
 
 function update_decryption_webinterface() {
   local commit=$1
 
-  info "Updating decryption web interface..."
+  info "Updating decryption web interface (${commit})..."
 
-  if [ ! -f "${_TMPDIR}/webdecryption/latest_post.sh" -o ! -f "${_TMPDIR}/webdecryption/latest_index.html" ]; then
-    compare_decryption_webinterface_version "${commit}"
+  if ! [ -f "${_TMPDIR}/webdecryption/${commit}_post.sh" -a -f "${_TMPDIR}/webdecryption/${commit}_index.html" ]; then
+    download_decryption_webinterface "${commit}"
   fi
 
   sudo mv "${_TMPDIR}/webdecryption/${commit}_index.html" /etc/initramfs-tools/root/www/index.html
