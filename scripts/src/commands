@@ -5,7 +5,7 @@ function has_labriqueinternet_applist() {
 function fetch_labriqueinternet_applist() {
   info "Fetching labriqueinternet app list..."
 
-  sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json &> /dev/null
+  sudo yunohost app fetchlist -n labriqueinternet -u https://labriqueinter.net/apps/labriqueinternet.json |& to_logs
 }
 
 function has_testing_kernel() {
@@ -20,9 +20,9 @@ function remove_testing_kernel() {
   sudo rm -f /etc/apt/preferences.d/kernel-{backports,testing}
 
   local kernel_version="$(uname -r)"
-  echo "linux-image-${kernel_version} linux-image-${kernel_version}/prerm/removing-running-kernel-${kernel_version} boolean false" | sudo debconf-set-selections
+  echo "linux-image-${kernel_version} linux-image-${kernel_version}/prerm/removing-running-kernel-${kernel_version} boolean false" | sudo debconf-set-selections |& to_logs
 
-  $_APT remove --purge -qy --force-yes linux-image-4* flash-kernel u-boot-tools u-boot-sunxi
+  $_APT remove --purge -y --force-yes linux-image-4* flash-kernel u-boot-tools u-boot-sunxi |& to_logs
 
   if has_encryptedfs; then
     echo 'LINUX_KERNEL_CMDLINE="console=ttyS2 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 root=/dev/mapper/root cryptopts=target=root,source=/dev/mmcblk0p2,cipher=aes-xts-plain64,size=256,hash=sha1 rootwait sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_no_mali_mem_reserve sunxi_fb_mem_reserve=0 panic=10 loglevel=6 consoleblank=0"' | sudo tee /etc/default/flash-kernel &> /dev/null
@@ -30,11 +30,11 @@ function remove_testing_kernel() {
     echo 'LINUX_KERNEL_CMDLINE="console=ttyS1 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 root=/dev/mmcblk0p1 rootwait sunxi_ve_mem_reserve=0 sunxi_g2d_mem_reserve=0 sunxi_no_mali_mem_reserve sunxi_fb_mem_reserve=0 panic=10 loglevel=6 consoleblank=0"' | sudo tee /etc/default/flash-kernel &> /dev/null
   fi
 
-  $_APT clean -q
-  $_APT update -q
-  $_APT install -qy --force-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools
+  $_APT clean |& to_logs
+  $_APT update |& to_logs
+  $_APT install -y --force-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold linux-image-armmp flash-kernel u-boot-sunxi u-boot-tools |& to_logs
 
-  sudo update-initramfs -k all -u
+  sudo update-initramfs -k all -u |& to_logs
 }
 
 function has_correct_hostname() {
@@ -47,13 +47,13 @@ function fix_hostname() {
   local main_domain=$(sudo cat /etc/yunohost/current_host)
 
   if [ -n "${main_domain}" ]; then
-    sudo hostnamectl --static set-hostname "${main_domain}"
-    sudo hostnamectl --transient set-hostname "${main_domain}"
-    sudo hostnamectl --pretty set-hostname "La Brique Internet (${main_domain})"
+    sudo hostnamectl --static set-hostname "${main_domain}" |& to_logs
+    sudo hostnamectl --transient set-hostname "${main_domain}" |& to_logs
+    sudo hostnamectl --pretty set-hostname "La Brique Internet (${main_domain})" |& to_logs
 
     if ! grep -q "${main_domain}" /etc/hosts; then
-      echo "::1 $main_domain" | sudo tee -a /etc/hosts
-      echo "127.0.0.1 $main_domain" | sudo tee -a /etc/hosts
+      echo "::1 $main_domain" | sudo tee -a /etc/hosts &> /dev/null
+      echo "127.0.0.1 $main_domain" | sudo tee -a /etc/hosts &> /dev/null
     fi
   else
     warn "Hostname cannot be fixed because there is no current host"
@@ -65,8 +65,8 @@ function download_decryption_webinterface() {
 
   mkdir -p "${_TMPDIR}/webdecryption/"
 
-  wget -q "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/cgi-bin/post.sh" -O "${_TMPDIR}/webdecryption/${commit}_post.sh"
-  wget -q "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/index.html" -O "${_TMPDIR}/webdecryption/${commit}_index.html"
+  wget "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/cgi-bin/post.sh" -O "${_TMPDIR}/webdecryption/${commit}_post.sh" |& to_logs
+  wget "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/index.html" -O "${_TMPDIR}/webdecryption/${commit}_index.html" |& to_logs
 }
 
 function compare_decryption_webinterface_version() {
@@ -92,5 +92,5 @@ function update_decryption_webinterface() {
   sudo chmod +x /etc/initramfs-tools/root/www/cgi-bin/post.sh
 
   sudo sed 's/^TIMEOUTclose.*/TIMEOUTclose = 3600/' -i /etc/initramfs-tools/stunnel.conf
-  sudo update-initramfs -u -k all > /dev/null
+  sudo update-initramfs -u -k all |& to_logs
 }

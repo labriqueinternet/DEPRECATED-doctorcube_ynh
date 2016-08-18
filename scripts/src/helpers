@@ -14,6 +14,12 @@ function err() {
   log "[ERR] ${1}"
 }
 
+function to_logs() {
+  if $_ISVERBOSE; then
+    cat
+  fi
+}
+
 function set_doctorcube_version() {
   local version=$1
   sudo yunohost app setting doctorcube version -v "${version}"

@@ -8,6 +8,12 @@ version=$_CURRENTVERSION
 
 info "Current version of DoctorCube is ${version}"
 info "Latest version of DoctorCube is ${_LATESTVERSION}"
+
+if [ "${version}" = "${_LATESTVERSION}" ]; then
+  info "Up-to-date, nothing to do"
+  exit 0
+fi
+
 info "Upgrading..."
 
 # 0.1 -> 0.2.1
