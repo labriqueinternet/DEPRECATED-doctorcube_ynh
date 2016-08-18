@@ -36,5 +36,5 @@ function is_olinux_board() {
 }
 
 function has_encryptedfs() {
-  [ -f /etc/crypttab ]
+  grep -q '^root\s' /etc/crypttab
 }
