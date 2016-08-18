@@ -15,8 +15,7 @@ function cleaning() {
 }
 
 function cleaning_err() {
-  trap - EXIT
-  cleaning
+  err "There was an error, script aborted"
   exit 1
 }
 
