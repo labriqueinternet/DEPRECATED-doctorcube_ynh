@@ -32,9 +32,9 @@ function set_doctorcube_version() {
 }
 
 function is_olinux_board() {
-  sudo grep -qi olinux /etc/flash-kernel/machine
+  sudo grep -qi olinux /etc/flash-kernel/machine &> /dev/null
 }
 
 function has_encryptedfs() {
-  grep -q '^root\s' /etc/crypttab
+  sudo grep -q '^root\s' /etc/crypttab &> /dev/null
 }
