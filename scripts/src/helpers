@@ -1,0 +1,30 @@
+function log() {
+  echo "${1}"
+}
+
+function info() {
+  log "[INFO] ${1}"
+}
+
+function warn() {
+  log "[WARN] ${1}"
+}
+
+function err() {
+  log "[ERR] ${1}"
+}
+
+function set_doctorcube_version() {
+  local version=$1
+  sudo yunohost app setting doctorcube version -v "${version}"
+
+  info "DoctorCube version is now ${version}"
+}
+
+function is_olinux_board() {
+  sudo grep -qi olinux /etc/flash-kernel/machine
+}
+
+function has_encryptedfs() {
+  [ -f /etc/crypttab ]
+}
