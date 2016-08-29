@@ -1,29 +1,66 @@
 #!/bin/bash
 
-set -e
+source src/env
+source src/helpers
+source src/commands
 
-source ./commons
+version=$_CURRENTVERSION
 
-version=$(sudo yunohost app setting doctorcube version)
+info "Current version of DoctorCube is ${version}"
+info "Latest version of DoctorCube is ${_LATESTVERSION}"
+
+if [ "${version}" = "${_LATESTVERSION}" ]; then
+  info "Up-to-date, nothing to do"
+  exit 0
+fi
+
+info "Upgrading..."
 
 # 0.1 -> 0.2.1
-if [[ "$version" == "0.1" ]]; then
+if [ "${version}" = 0.1 ]; then
 
-    set_correct_hostname
+  # The hostname should not be a fake one like "olinux"
+  if ! has_correct_hostname; then
+    fix_hostname
+  fi
 
-    sudo yunohost app setting doctorcube version -v "0.2.1"
-    version="0.2.1"
+  version=0.2.1
+  set_doctorcube_version "${version}"
 fi
 
 # 0.2 -> 0.2.1
-if [[ "$version" == "0.2" ]]; then
+if [ "${version}" = 0.2 ]; then
 
-    # we weren't setting the domain correctly in the case of only
-    # one single domain
-    if [[ "$(hostname)" == "olinux" ]]; then
-        set_correct_hostname
-    fi
+  # The hostname was not correctly set in the case of only one single domain
+  if ! has_correct_hostname; then
+    fix_hostname
+  fi
 
-    sudo yunohost app setting doctorcube version -v "0.2.1"
-    version="0.2.1"
+  version=0.2.1
+  set_doctorcube_version "${version}"
 fi
+
+# 0.2.1 -> 0.3
+if [ "${version}" = 0.2.1 ]; then
+  if has_encryptedfs; then
+
+    # The testing kernel was not correctly removed in the case of an
+    # encrypted filesystem
+    if is_olinux_board && has_testing_kernel; then
+      remove_testing_kernel
+    fi
+  
+    # Fixes a security issue (removing eval commands) and some minor bugs
+    decryption_webinterface_version=6becabaf57e95e334ebb8141642b807974885f84
+    if ! compare_decryption_webinterface_version "${decryption_webinterface_version}"; then
+      update_decryption_webinterface "${decryption_webinterface_version}"
+    fi
+  fi
+
+  version=0.3
+  set_doctorcube_version "${version}"
+fi
+
+info "Upgrading done"
+
+exit 0

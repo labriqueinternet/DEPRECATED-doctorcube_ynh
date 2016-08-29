@@ -1,0 +1,23 @@
+set -Eu -o pipefail
+
+export DEBIAN_FRONTEND=noninteractive
+export DEBCONF_NONINTERACTIVE_SEEN=true
+export LC_ALL=C LANGUAGE=C LANG=C
+
+readonly _ISVERBOSE="$([ "${-/x}" != "${-}" ] && echo true || echo false)"
+readonly _LATESTVERSION="$(cat ./version)"
+readonly _CURRENTVERSION="$(sudo yunohost app setting doctorcube version 2> /dev/null || true)"
+readonly _TMPDIR="$(mktemp -dp /tmp/ doctorcube-XXXXX)"
+readonly _APT='sudo --preserve-env apt-get'
+
+function cleaning() {
+  rm -fr "${_TMPDIR}"
+}
+
+function cleaning_err() {
+  err "There was an error, script aborted"
+  exit 1
+}
+
+trap cleaning EXIT
+trap cleaning_err ERR
