@@ -25,7 +25,7 @@ fi
 if has_encryptedfs; then
 
   # Updates the decryption web interface and rebuilds the initramfs
-  decryption_webinterface_version=6becabaf57e95e334ebb8141642b807974885f84
+  decryption_webinterface_version=405fde8800e88f590b13f4211c31dabed71fc4ed
   if ! compare_decryption_webinterface_version "${decryption_webinterface_version}"; then
     update_decryption_webinterface "${decryption_webinterface_version}"
   fi
