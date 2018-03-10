@@ -65,8 +65,10 @@ function download_decryption_webinterface() {
 
   mkdir -p "${_TMPDIR}/webdecryption/"
 
-  wget "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/cgi-bin/post.sh" -O "${_TMPDIR}/webdecryption/${commit}_post.sh" |& to_logs
-  wget "https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw/build/script/initramfs/www/index.html" -O "${_TMPDIR}/webdecryption/${commit}_index.html" |& to_logs
+  repo_root_dir="https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw"
+  
+  wget "${repo_root_dir}/build/script/initramfs/www/cgi-bin/post.sh" -O "${_TMPDIR}/webdecryption/${commit}_post.sh" |& to_logs
+  wget "${repo_root_dir}/build/script/initramfs/www/index.html" -O "${_TMPDIR}/webdecryption/${commit}_index.html" |& to_logs
 }
 
 function compare_decryption_webinterface_version() {
