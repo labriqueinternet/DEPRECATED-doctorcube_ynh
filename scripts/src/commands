@@ -67,14 +67,20 @@ function download_decryption_webinterface() {
 
   repo_root_dir="https://dev.yunohost.org/projects/la-brique-internet/repository/build/revisions/${commit}/raw"
   
-  wget "${repo_root_dir}/build/script/initramfs/www/cgi-bin/post.sh" -O "${_TMPDIR}/webdecryption/${commit}_post.sh" |& to_logs
-  wget "${repo_root_dir}/build/script/initramfs/www/index.html" -O "${_TMPDIR}/webdecryption/${commit}_index.html" |& to_logs
+  local failed=false
+  wget "${repo_root_dir}/build/script/initramfs/www/cgi-bin/post.sh" -O "${_TMPDIR}/webdecryption/${commit}_post.sh" |& to_logs || failed=true
+  wget "${repo_root_dir}/build/script/initramfs/www/index.html" -O "${_TMPDIR}/webdecryption/${commit}_index.html" |& to_logs || failed=true
+  if $failed ; then
+    warn "WebDecryption files cannot be downloaded"
+    return 1
+  fi
 }
 
 function compare_decryption_webinterface_version() {
   local commit=$1
 
-  download_decryption_webinterface "${commit}"
+  # return 0 = "no new version" if we didn't found updated files
+  download_decryption_webinterface "${commit}" || return 0
 
   sudo cmp -s "${_TMPDIR}/webdecryption/${commit}_index.html" /etc/initramfs-tools/root/www/index.html\
     && sudo cmp -s "${_TMPDIR}/webdecryption/${commit}_post.sh" /etc/initramfs-tools/root/www/cgi-bin/post.sh
@@ -86,7 +92,7 @@ function update_decryption_webinterface() {
   info "Updating decryption web interface (${commit})..."
 
   if ! [ -f "${_TMPDIR}/webdecryption/${commit}_post.sh" -a -f "${_TMPDIR}/webdecryption/${commit}_index.html" ]; then
-    download_decryption_webinterface "${commit}"
+    download_decryption_webinterface "${commit}" || return 1
   fi
 
   sudo mv "${_TMPDIR}/webdecryption/${commit}_index.html" /etc/initramfs-tools/root/www/index.html
