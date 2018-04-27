@@ -52,7 +52,7 @@ if [ "${version}" = 0.2.1 ]; then
 
     # Fixes a security issue (removing eval commands) and some minor bugs
     # Please also update the sha in install script...
-    decryption_webinterface_version=d2a948cce56aaab014be9e27848a64c3a8db0832
+    decryption_webinterface_version=3fd4dce844a54b8a29a838cf3bcfb6cae3953e73
     if ! compare_decryption_webinterface_version "${decryption_webinterface_version}"; then
       update_decryption_webinterface "${decryption_webinterface_version}"
     fi

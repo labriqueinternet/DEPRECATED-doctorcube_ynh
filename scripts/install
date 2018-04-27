@@ -26,7 +26,7 @@ if has_encryptedfs; then
 
   # Updates the decryption web interface and rebuilds the initramfs
   # Please also update the sha in upgrade script...
-  decryption_webinterface_version=d2a948cce56aaab014be9e27848a64c3a8db0832
+  decryption_webinterface_version=3fd4dce844a54b8a29a838cf3bcfb6cae3953e73
   if ! compare_decryption_webinterface_version "${decryption_webinterface_version}"; then
     update_decryption_webinterface "${decryption_webinterface_version}"
   fi
