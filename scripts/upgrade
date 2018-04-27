@@ -49,9 +49,10 @@ if [ "${version}" = 0.2.1 ]; then
     if is_olinux_board && has_testing_kernel; then
       remove_testing_kernel
     fi
-  
+
     # Fixes a security issue (removing eval commands) and some minor bugs
-    decryption_webinterface_version=6becabaf57e95e334ebb8141642b807974885f84
+    # Please also update the sha in install script...
+    decryption_webinterface_version=d2a948cce56aaab014be9e27848a64c3a8db0832
     if ! compare_decryption_webinterface_version "${decryption_webinterface_version}"; then
       update_decryption_webinterface "${decryption_webinterface_version}"
     fi
